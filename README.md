@@ -16,11 +16,13 @@ Then, add it to your `gulpfile.js`:
 ```javascript
 var spritesmith = require("gulp-spritesmith");
 
-gulp.src('./src/img/*.png')
-    .pipe(sprite({
-        destImg: 'dist/img/sprite.png',
-        destCSS: 'dist/css/sprite.css'
-    }));
+gulp.task('sprites', function () {
+    return gulp.src('./src/img/*.png')
+        .pipe(spritesmith({
+            destImg: 'dist/img/sprite.png',
+            destCSS: 'dist/css/sprite.css'
+        }));
+});
 ```
 
 ## API
