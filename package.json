@@ -28,7 +28,7 @@
     "event-stream": "*",
     "json2css": "~4.2.0",
     "async": "~0.2.10",
-    "spritesmith": "~0.17.0"
+    "spritesmith": "~0.18.0"
   },
   "devDependencies": {
     "mocha": "*",

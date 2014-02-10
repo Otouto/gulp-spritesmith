@@ -1,9 +1,7 @@
-(PLUGIN AUTHOR: Please read [Plugin README conventions](https://github.com/wearefractal/gulp/wiki/Plugin-README-Conventions), then delete this line)
-
 # gulp-spritesmith
 [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url]  [![Coverage Status](coveralls-image)](coveralls-url) [![Dependency Status][depstat-image]][depstat-url]
 
-> spritesmith plugin for [gulp](https://github.com/wearefractal/gulp)
+> [Gulp](https://github.com/wearefractal/gulp) plugin for sprite generation, based on spritesmith.
 
 ## Usage
 
@@ -29,11 +27,23 @@ gulp.src('./src/img/*.png')
 
 ### spritesmith(options)
 
-#### options.msg
+#### options.destImg
 Type: `String`
-Default: `Hello World`
+Default: ``
 
-The message you wish to attach to file.
+Path where you want to get your image sprite.
+
+#### options.destCSS
+Type: `String`
+Default: ``
+
+Path where you want to get your css sprite.
+
+#### options.cssTemplate
+Type: `String`
+Default: ``
+
+Path to mustache tmpl file, to format output css.
 
 
 ## License
@@ -42,12 +52,6 @@ The message you wish to attach to file.
 
 [npm-url]: https://npmjs.org/package/gulp-spritesmith
 [npm-image]: https://badge.fury.io/js/gulp-spritesmith.png
-
-[travis-url]: http://travis-ci.org/otouto/gulp-spritesmith
-[travis-image]: https://secure.travis-ci.org/otouto/gulp-spritesmith.png?branch=master
-
-[coveralls-url]: https://coveralls.io/r/otouto/gulp-spritesmith
-[coveralls-image]: https://coveralls.io/repos/otouto/gulp-spritesmith/badge.png
 
 [depstat-url]: https://david-dm.org/otouto/gulp-spritesmith
 [depstat-image]: https://david-dm.org/otouto/gulp-spritesmith.png
