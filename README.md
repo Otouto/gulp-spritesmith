@@ -1,5 +1,5 @@
 # gulp-spritesmith
-[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url]  [![Coverage Status](coveralls-image)](coveralls-url) [![Dependency Status][depstat-image]][depstat-url]
+[![NPM version][npm-image]][npm-url] [![Dependency Status][depstat-image]][depstat-url]
 
 > [Gulp](https://github.com/wearefractal/gulp) plugin for sprite generation, based on spritesmith.
 
