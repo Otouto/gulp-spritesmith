@@ -74,7 +74,8 @@ module.exports = function (opt) {
                 destCss = group ? rename(opt.destCSS, group) : opt.destCSS,
                 destCssDir = path.dirname(destCss),
                 destImgDir = path.dirname(destImg),
-                imgPath = (group ? rename(opt.imgPath, group) : opt.imgPath) || path.relative(destCss, destImg);
+                imgPath = (group ? rename(opt.imgPath, group) : opt.imgPath) || path.relative(path.dirname(destCss), path.dirname(destImg));
+                imgPath = imgPath += '/' + path.basename(destImg);
 
             async.parallel([
                 function (cb) {
