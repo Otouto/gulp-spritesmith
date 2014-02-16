@@ -1,10 +1,10 @@
 var through = require('through'),
-    path = require('path'),
-    fs = require('fs'),
-    json2css = require('json2css'),
     async = require('async'),
-    mkdirp = require('mkdirp'),
+    path = require('path'),
+    File = require('vinyl'),
     spritesmith = require('spritesmith'),
+    generateCss = require('./lib/generateCss'),
+    _ = require('lodash'),
     gutil = require('gulp-util');
 
 var PluginError = gutil.PluginError;
@@ -12,99 +12,40 @@ var PluginError = gutil.PluginError;
 module.exports = function (opt) {
     'use strict';
     opt = opt || {};
-    var cssTemplate = opt.cssTemplate;
+    var buffer = opt.groupBy ? {} : [],
+        defaults = {
+            'engine': 'auto',
+            'algorithm': 'binary-tree',
+            'padding': 1
+        },
+        params = _.extend({}, defaults, opt);
 
-    var buffer = {};
-
-    function generateCss(result, imgPath) {
-        var coordinates = result.coordinates,
-            properties = result.properties,
-            cleanCoords = [],
-            cssFormat = 'custom';
-
-        // Clean up the file name of the file
-        Object.getOwnPropertyNames(coordinates).sort().forEach(function (file) {
-            // Extract the image name (exlcuding extension)
-            var fullname = path.basename(file),
-            nameParts = fullname.split('.');
-
-            // If there is are more than 2 parts, pop the last one
-            if (nameParts.length >= 2) {
-                nameParts.pop();
-            }
-
-            // Extract out our name
-            var name = nameParts.join('.'),
-            coords = coordinates[file];
-
-            // Specify the image for the sprite
-            coords.name = name;
-            coords.source_image = file;
-            coords.image = imgPath;
-            coords.total_width = properties.width;
-            coords.total_height = properties.height;
-            cleanCoords.push(coords);
-        });
-
-        if (cssTemplate) {
-            var mt = fs.readFileSync(cssTemplate, 'utf8');
-            json2css.addMustacheTemplate(cssFormat, mt);
-        } else {
-            cssFormat = 'css';
-        }
-
-        return json2css(cleanCoords, {format: cssFormat, formatOpts: {}});
+    function rename(file, group) {
+        return file.replace(/\.(?=[^.]*$)/g, '.' + group + '.');
     }
 
-    function rename(dest, group) {
-        var name = dest.split(path.sep),
-            file = name[name.length - 1];
-
-        name[name.length - 1] = file.replace('.', '.' + group + '.');
-        return name.join('/');
-    }
-
-    function processFile(params, done, group) {
+    function processFiles(group, data, end) {
         var self = this;
 
+        params.src = group ? buffer[group] : buffer;
         spritesmith(params, function (err, result) {
-            if (err) { return self.emit('error', new PluginError('gulp-spritesmith', 'Error occurred during spritesmith processing')); }
+            if (err) {
+                return self.emit('error', new PluginError('gulp-spritesmith', 'Error occurred during spritesmith processing'));
+            }
 
-            var destImg = group ? rename(opt.destImg, group) : opt.destImg,
-                destCss = group ? rename(opt.destCSS, group) : opt.destCSS,
-                destCssDir = path.dirname(destCss),
-                destImgDir = path.dirname(destImg),
-                imgPath = (group ? rename(opt.imgPath, group) : opt.imgPath) || path.relative(destCss, destImg);
-
-            async.parallel([
-                function (cb) {
-                    mkdirp(destImgDir, function (err) {
-                        if (err) { return self.emit('error', new PluginError('gulp-spritesmith', 'Can`t create image dest folder')); }
-                        fs.writeFileSync(destImg, result.image, 'binary');
-                        cb();
-                    });
-                },
-                function (cb) {
-                    mkdirp(destCssDir, function (err) {
-                        if (err) { return self.emit('error', new PluginError('gulp-spritesmith', 'Can`t create css dest folder')); }
-                        var cssStr = generateCss(result, imgPath);
-                        fs.writeFileSync(destCss, cssStr, 'utf8');
-                        cb();
-                    });
-                }
-            ],
-            function () {
-                done();
-            });
+            var imgPath = group ? rename(opt.imgPath, group) : opt.imgPath,
+                cssStr = generateCss(result, imgPath, opt.cssTemplate);
+            data({css: cssStr, img: result.image, group: group});
+            end();
         });
     }
 
-    function processByGroup(prarams, done) {
+    function processByGroup(data, end) {
         function makeSprite(group, cb) {
-            prarams.src = buffer[group];
-            processFile(prarams, cb, group);
+            processFiles(group, data, cb);
         }
-        async.each(Object.keys(buffer), makeSprite, done);
+
+        async.each(Object.keys(buffer), makeSprite, end);
     }
 
     function bufferContents(file) {
@@ -115,30 +56,43 @@ module.exports = function (opt) {
             groupValue = '',
             parsedPath = file.relative.split(path.sep);
 
-        parsedPath.filter(function (pth, i) {
-            if (pth === group) { groupValue = parsedPath[i + 1]; }
-        });
-
-        if (!buffer[groupValue]) { buffer[groupValue] = []; }
-        buffer[groupValue].push(file.path);
+        //TODO refactor ugly code
+        if (group) {
+            parsedPath.filter(function (pth, i) {
+                if (pth === group) { groupValue = parsedPath[i + 1]; }
+            });
+            if (!buffer[groupValue]) { buffer[groupValue] = []; }
+            buffer[groupValue].push(file.path);
+        } else {
+            buffer.push(file.path);
+        }
     }
 
     function endStream() {
         if (Object.keys(buffer).length === 0 || buffer.length === 0) { return this.emit('end'); }
 
-        var self = this,
-            spriteParams = {
-            'engine': opt.engine || 'auto',
-            'algorithm': opt.algorithm || 'binary-tree',
-            'padding': opt.padding || 1
-        };
+        var self = this;
 
+        function data(result) {
+            self.emit('data', new File({
+                cwd: './',
+                base: './',
+                path: result.group ? rename(opt.cssName, result.group) : opt.cssName,
+                contents: new Buffer(result.css)
+            }));
+
+            self.emit('data', new File({
+                cwd: './',
+                base: './',
+                path: result.group ? rename(opt.imgName, result.group) : opt.imgName,
+                contents: new Buffer(result.img, 'binary')
+            }));
+        }
         function end() {
-            self.emit('data', 'yeah!');
             self.emit('end');
         }
 
-        ({}.toString.call(buffer) === '[object Array]') ? processFile(spriteParams, end) : processByGroup(spriteParams, end);
+        ({}.toString.call(buffer) === '[object Array]') ? processFiles(null, data, end) : processByGroup(data, end);
     }
 
     return through(bufferContents, endStream);

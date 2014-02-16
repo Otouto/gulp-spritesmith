@@ -1,12 +1,14 @@
 {
   "name": "gulp-spritesmith",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A plugin for Gulp",
   "keywords": [
-    "gulpplugin"
+    "gulpplugin", "sprite"
   ],
   "homepage": "https://github.com/Otouto/gulp-spritesmith",
-  "bugs": "https://github.com/Otouto/gulp-spritesmith/issues",
+  "bugs": {
+    "url": "https://github.com/Otouto/gulp-spritesmith/issues"
+  },
   "author": {
     "name": "Dmitry Lutsik",
     "email": "otoyto@gmail.com",
@@ -17,26 +19,15 @@
     "type": "git",
     "url": "git://github.com/otouto/gulp-spritesmith.git"
   },
-  "scripts": {
-    "test": "istanbul test _mocha --report html -- test/*.js --reporter spec",
-    "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
-  },
   "dependencies": {
     "through": "*",
     "gulp-util": "~2.2.0",
-    "mkdirp": "~0.3.5",
     "event-stream": "*",
     "json2css": "~4.2.0",
     "async": "~0.2.10",
-    "spritesmith": "~0.18.0"
-  },
-  "devDependencies": {
-    "mocha": "*",
-    "coveralls": "*",
-    "mocha-lcov-reporter": "*",
-    "istanbul": "*",
-    "should": "~2.1.0",
-    "phantomjs": "~1.9"
+    "spritesmith": "~0.18.0",
+    "lodash": "~2.4.1",
+    "vinyl": "~0.2.3"
   },
   "engines": {
     "node": ">=0.8.0",
@@ -46,5 +37,9 @@
     {
       "type": "MIT"
     }
-  ]
+  ],
+  "readme": "# gulp-spritesmith\n[![NPM version][npm-image]][npm-url] [![Dependency Status][depstat-image]][depstat-url]\n\n> [Gulp](https://github.com/wearefractal/gulp) plugin for sprite generation, based on spritesmith.\n\n## Usage\n\nFirst, install `gulp-spritesmith` as a development dependency:\n\n```shell\nnpm install --save-dev gulp-spritesmith\n```\n\nThen, add it to your `gulpfile.js`:\n\n```javascript\nvar spritesmith = require(\"gulp-spritesmith\");\n\ngulp.src('./src/img/*.png')\n    .pipe(sprite({\n        destImg: 'dist/img/sprite.png',\n        destCSS: 'dist/css/sprite.css'\n    }));\n```\n\n## API\n\n### spritesmith(options)\n\n#### options.destImg\nType: `String`\nDefault: ``\n\nPath where you want to get your image sprite.\n\n#### options.destCSS\nType: `String`\nDefault: ``\n\nPath where you want to get your css sprite.\n\n#### options.cssTemplate\nType: `String`\nDefault: ``\n\nPath to mustache tmpl file, to format output css.\n\n\n## License\n\n[MIT License](http://en.wikipedia.org/wiki/MIT_License)\n\n[npm-url]: https://npmjs.org/package/gulp-spritesmith\n[npm-image]: https://badge.fury.io/js/gulp-spritesmith.png\n\n[depstat-url]: https://david-dm.org/otouto/gulp-spritesmith\n[depstat-image]: https://david-dm.org/otouto/gulp-spritesmith.png\n",
+  "readmeFilename": "README.md",
+  "_id": "gulp-spritesmith@0.0.1",
+  "_from": "gulp-spritesmith@0.0.1"
 }
