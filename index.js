@@ -34,7 +34,7 @@ module.exports = function (opt) {
             }
 
             var imgPath = group ? rename(opt.imgPath, group) : opt.imgPath,
-                cssStr = generateCss(result, imgPath, opt.cssTemplate);
+                cssStr = generateCss(result, imgPath, opt.styleTemplate);
             data({css: cssStr, img: result.image, group: group});
             end();
         });
@@ -77,7 +77,7 @@ module.exports = function (opt) {
             self.emit('data', new File({
                 cwd: './',
                 base: './',
-                path: result.group ? rename(opt.cssName, result.group) : opt.cssName,
+                path: result.group ? rename(opt.styleName, result.group) : opt.styleName,
                 contents: new Buffer(result.css)
             }));
 
