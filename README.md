@@ -8,20 +8,24 @@
 First, install `gulp-spritesmith` as a development dependency:
 
 ```shell
-npm install --save-dev gulp-spritesmith
+npm i -D gulp-spritesmith
 ```
 
 Then, add it to your `gulpfile.js`:
 
 ```javascript
 var spritesmith = require("gulp-spritesmith");
+var gulpif = require("gulp-if");
 
 gulp.task('sprites', function () {
-    return gulp.src('./src/img/*.png')
-        .pipe(spritesmith({
-            destImg: 'dist/img/sprite.png',
-            destCSS: 'dist/css/sprite.css'
-        }));
+    return  gulp.src('./src/**/png/*.png')
+                .pipe(tasks.spritesmith({
+                    imgName: 'sprite.png',
+                    styleName: 'sprite.css',
+                    imgPath: '../img/sprite.png'
+                }))
+                .pipe(gulpif('*.png', gulp.dest('./dist/img/')))
+                .pipe(gulpif('*.css', gulp.dest('./dist/css/')));
 });
 ```
 
@@ -29,24 +33,41 @@ gulp.task('sprites', function () {
 
 ### spritesmith(options)
 
-#### options.destImg
+#### options.imgName
 Type: `String`
 Default: ``
 
-Path where you want to get your image sprite.
+Set name for sprite img file.
 
-#### options.destCSS
+#### options.styleName
 Type: `String`
 Default: ``
 
-Path where you want to get your css sprite.
+Set name for sprite styles file.
 
-#### options.cssTemplate
+#### options.imgPath
 Type: `String`
 Default: ``
 
-Path to mustache tmpl file, to format output css.
+Set relative path to sprite img, which will be used in styles file.
 
+#### options.styleTemplate
+Type: `String`
+Default: ``
+
+Path to mustache tmpl file, to format output styles file.
+
+#### options.algorithm
+Type: `String`
+Default: `binary-tree`
+
+Set packing algorithm, top-down/left-right/diagonal/alt-diagonal/binary-tree are available.
+
+#### options.algorithm
+Type: `Number`
+Default: `1`
+
+Set padding in pixels to use between images
 
 ## License
 
