@@ -118,6 +118,11 @@ Default: `1`
 
 Set padding in pixels to use between images
 
+## Changelog
+0.0.2 - Dont save sprite files inside task anymore.
+
+0.0.1 - initial version
+
 ## License
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)
