@@ -29,6 +29,47 @@ gulp.task('sprites', function () {
 });
 ```
 
+If you need few grouped sprites, you should specify folder name to group by. Lets say you have following app structure, with several skins:
+
+* **/Module1**
+    * **...**
+    * **/skin**
+        * **/basic**
+            * **/png**
+        * **/green**
+             * **/png**
+        * **/dark**
+             * **/png**
+        * **/light**
+            * **/png**
+* **...**
+* **/ModuleN**
+    * **...**
+    * **/skin**
+        * **/basic**
+            * **/png**
+        * **/green**
+        * **/dark**
+            * **/png**
+        * **/light**
+
+Then just set `skin` for groupBy param:
+```javascript
+gulp.task('sprites', function () {
+    return  gulp.src('./src/**/png/*.png')
+                .pipe(tasks.spritesmith({
+                    imgName: 'sprite.png',
+                    styleName: 'sprite.css',
+                    imgPath: '../img/sprite.png',
+                    groupBy: 'skin'
+                }))
+                .pipe(gulpif('*.png', gulp.dest('./dist/img/')))
+                .pipe(gulpif('*.css', gulp.dest('./dist/css/')));
+});
+```
+and you`ll get 4 sprites: sprite.basic.png, sprite.green.png, sprite.dark.png, sprite.light.png. And the same for css.
+
+
 ## API
 
 ### spritesmith(options)
@@ -56,6 +97,14 @@ Type: `String`
 Default: ``
 
 Path to mustache tmpl file, to format output styles file.
+
+Set relative path to sprite img, which will be used in styles file.
+
+#### options.groupBy
+Type: `String`
+Default: ``
+
+Set if you want to get grouped sprites.
 
 #### options.algorithm
 Type: `String`
