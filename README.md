@@ -112,7 +112,7 @@ Default: `binary-tree`
 
 Set packing algorithm, top-down/left-right/diagonal/alt-diagonal/binary-tree are available.
 
-#### options.algorithm
+#### options.padding
 Type: `Number`
 Default: `1`
 
